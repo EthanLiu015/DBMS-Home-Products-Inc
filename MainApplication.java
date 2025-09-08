@@ -60,8 +60,10 @@ public class MainApplication {
     }
 
     public void start() {
-        mainFrame.setVisible(true);
-        showScreen("MainMenu");
+        SwingUtilities.invokeLater(() -> {
+            mainFrame.setVisible(true);
+            showScreen("MainMenu");
+        });
     }
 
     public static void main(String[] args) {
@@ -71,70 +73,51 @@ public class MainApplication {
         });
     }
 
-    // Add this method
+    private void addAndShowPanel(JPanel panel, String name) {
+        SwingUtilities.invokeLater(() -> {
+            cardPanel.add(panel, name);
+            cardLayout.show(cardPanel, name);
+        });
+    }
+
     public void showCustomerDetails(Customer customer) {
-        viewAllCustomer = new ViewAllCustomer(this, customer);
-        cardPanel.add(viewAllCustomer.getMainPanel(), "ViewAllCustomer");
-        showScreen("ViewAllCustomer");
+        addAndShowPanel(new ViewAllCustomer(this, customer).getMainPanel(), "ViewAllCustomer");
     }
 
-    // Add this method
     public void showNewCustomer() {
-        newEditCustomer = new NewEditCustomer(this, null);
-        cardPanel.add(newEditCustomer.getMainPanel(), "NewEditCustomer");
-        showScreen("NewEditCustomer");
+        addAndShowPanel(new NewEditCustomer(this, null).getMainPanel(), "NewEditCustomer");
     }
 
-    // delete maybe
     public void showEditCustomer(Customer customer) {
-        newEditCustomer = new NewEditCustomer(this, customer);
-        cardPanel.add(newEditCustomer.getMainPanel(), "EditCustomer");
-        showScreen("EditCustomer");
+        addAndShowPanel(new NewEditCustomer(this, customer).getMainPanel(), "EditCustomer");
     }
 
-     // Add this method
     public void showOrderDetails(Order order) {
-        viewAllOrder = new ViewAllOrder(this, order);
-        cardPanel.add(viewAllOrder.getMainPanel(), "ViewAllOrder");
-        showScreen("ViewAllOrder");
+        addAndShowPanel(new ViewAllOrder(this, order).getMainPanel(), "ViewAllOrder");
     }
 
-    // Add this method
     public void showNewOrder() {
-        newEditOrder = new NewEditOrder(this);
-        cardPanel.add(newEditOrder.getMainPanel(), "NewEditOrder");
-        showScreen("NewEditOrder");  // Fixed typo from "NewEditOrdder" to "NewEditOrder"
+        addAndShowPanel(new NewEditOrder(this).getMainPanel(), "NewEditOrder");
     }
 
-    // Add these methods to MainApplication class
-public void showNewProduct() {
-    NewEditProduct newProduct = new NewEditProduct(this, null);
-    cardPanel.add(newProduct.getMainPanel(), "NewEditProduct");
-    showScreen("NewEditProduct");
-}
+    public void showNewProduct() {
+        addAndShowPanel(new NewEditProduct(this, null).getMainPanel(), "NewEditProduct");
+    }
 
-public void showEditProduct(Product product) {
-    NewEditProduct editProduct = new NewEditProduct(this, product);
-    cardPanel.add(editProduct.getMainPanel(), "EditProduct");
-    showScreen("EditProduct");
-}
+    public void showEditProduct(Product product) {
+        addAndShowPanel(new NewEditProduct(this, product).getMainPanel(), "EditProduct");
+    }
 
-public void showNewSalesRep() {
-    NewEditSalesRep newSalesRep = new NewEditSalesRep(this, null);
-    cardPanel.add(newSalesRep.getMainPanel(), "NewEditSalesRep");
-    showScreen("NewEditSalesRep");
-}
+    public void showNewSalesRep() {
+        addAndShowPanel(new NewEditSalesRep(this, null).getMainPanel(), "NewEditSalesRep");
+    }
 
-public void showSalesRepDetails(SalesRep salesRep) {
-    viewAllSalesRep = new ViewAllSalesRep(this, salesRep);
-    cardPanel.add(viewAllSalesRep.getMainPanel(), "ViewAllSalesRep");
-        showScreen("ViewAllSalesRep");
-}
+    public void showSalesRepDetails(SalesRep salesRep) {
+        addAndShowPanel(new ViewAllSalesRep(this, salesRep).getMainPanel(), "ViewAllSalesRep");
+    }
 
-public void showEditSalesRep(SalesRep salesRep) {
-    NewEditSalesRep editSalesRep = new NewEditSalesRep(this, salesRep);
-    cardPanel.add(editSalesRep.getMainPanel(), "EditSalesRep");
-    showScreen("EditSalesRep");
-}
+    public void showEditSalesRep(SalesRep salesRep) {
+        addAndShowPanel(new NewEditSalesRep(this, salesRep).getMainPanel(), "EditSalesRep");
+    }
 
 }

@@ -20,17 +20,17 @@ public class CustomerService
      * @param return a list of all customers
      */
     public static List<Customer> getAllCustomers()
-    {  
+    {
         List<Customer> customers = new ArrayList<>();  
         String query = "SELECT * FROM tblCustomer";  
   
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());  
              PreparedStatement preparedStatement = connection.prepareStatement(query);  
              ResultSet resultSet = preparedStatement.executeQuery())
-        {  
+        {
   
             while (resultSet.next())
-            {  
+            {
                 // populate the customer
                 Customer customer = new Customer();
 
@@ -56,7 +56,7 @@ public class CustomerService
             }  
         }
         catch (SQLException e)
-        {  
+        {
             e.printStackTrace();  
         }  
   
@@ -115,27 +115,27 @@ public class CustomerService
      */
     public static boolean isValidSalesRep(int repID)
     {
-    // query to run
-    String query = "SELECT COUNT(*) FROM tblSalesRep WHERE SalesRepID = ?";
-    
-    try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
-         PreparedStatement stmt = connection.prepareStatement(query))
-    {
-        stmt.setInt(1, repID);
-        ResultSet rs = stmt.executeQuery();
+        // query to run
+        String query = "SELECT COUNT(*) FROM tblSalesRep WHERE SalesRepID = ?";
         
-        // if more than 1 sales rep exists return true
-        if (rs.next())
+        try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
+            PreparedStatement stmt = connection.prepareStatement(query))
         {
-            return rs.getInt(1) > 0;
+            stmt.setInt(1, repID);
+            ResultSet rs = stmt.executeQuery();
+            
+            // if more than 1 sales rep exists return true
+            if (rs.next())
+            {
+                return rs.getInt(1) > 0;
+            }
         }
-    }
-    catch (SQLException e)
-    {
-        e.printStackTrace();
-    }
-    
-    return false;
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        
+        return false;
     }
     
     /**
@@ -150,7 +150,7 @@ public class CustomerService
             "FirstName = ?, LastName = ?, Address1 = ?, City = ?, State = ?, ZipCode = ?, Credit = ?, " +
             "SalesRepID = ?, Company = ?, Website = ?, Email = ?, BusinessNumber = ?, CellNumber = ?, " +
             "Title = ?, CustomerStatus = ?, Notes = ? WHERE CustomerID = ?";
-    
+        
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
             PreparedStatement stmt = connection.prepareStatement(query))
         {

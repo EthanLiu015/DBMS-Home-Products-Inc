@@ -17,7 +17,7 @@ public class HomeProductsRunner
         for (Customer customer : customers) {
             // System.out.println(customer);
         }
-
+        
         // Create a sample customer
         Customer customer = new Customer();
         customer.setFirstName("John");
@@ -36,10 +36,10 @@ public class HomeProductsRunner
         customer.setTitle("CEO");
         customer.setStatus("Active");
         customer.setNotes("Regular customer with excellent credit");
-
+        
         // Attempt to add the customer
         boolean isAdded = CustomerService.addCustomer(customer);
-
+        
         // Print result
         if (isAdded)
         {

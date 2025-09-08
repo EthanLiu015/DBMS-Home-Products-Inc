@@ -23,7 +23,7 @@ public class PaymentService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             stmt.setInt(1, payment.getCustomerID());
             stmt.setInt(2, payment.getOrderID());
             stmt.setDate(3, payment.getPaymentDate());
@@ -33,10 +33,10 @@ public class PaymentService {
             stmt.setString(7, payment.getCardNumber());
             stmt.setDate(8, payment.getExpirationDate());
             stmt.setBoolean(9, payment.isCreditCard());
-            
+
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -58,10 +58,10 @@ public class PaymentService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
                 stmt.setInt(1, customerID);
                 ResultSet rs = stmt.executeQuery();
-            
+
                 while (rs.next()) {
                     Order order = new Order();
                     order.setOrderID(rs.getInt("OrderID"));
@@ -73,10 +73,10 @@ public class PaymentService {
                     order.setSalesTax(rs.getDouble("SalesTax"));
                     order.setCustomerFirstName(rs.getString("FirstName"));
                     order.setCustomerLastName(rs.getString("LastName"));
-                
+
                     loadOrderItems(order);
                     loadOrderPayments(order);
-                    
+
                     unpaidOrders.add(order);
                 }
         } catch (SQLException e) {
@@ -96,20 +96,20 @@ public class PaymentService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                     DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
                  PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             stmt.setInt(1, order.getOrderID());
             ResultSet rs = stmt.executeQuery();
-            
+
             while (rs.next()) {
                 Order.OrderItem item = new Order.OrderItem();
                 item.setProductID(rs.getString("ProductID"));
                 item.setProductDescription(rs.getString("ProductDescription"));
                 item.setQuantityOrdered(rs.getInt("QuantityOrdered"));
                 item.setQuotedPrice(rs.getDouble("QuotedPrice"));
-                
+
                 order.addOrderItem(item);
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -125,10 +125,10 @@ public class PaymentService {
          try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                     DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
                  PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             stmt.setInt(1, order.getOrderID());
             ResultSet rs = stmt.executeQuery();
-            
+
             while (rs.next()) {
                 Order.Payment payment = new Order.Payment();
                 payment.setPaymentID(rs.getInt("PaymentID"));
@@ -139,10 +139,10 @@ public class PaymentService {
                 payment.setCardNumber(rs.getString("CardNumber"));
                 payment.setExpirationDate(rs.getDate("ExpirationDate"));
                 payment.setIsCreditCard(rs.getBoolean("BooleanCreditCard"));
-                
+
                 order.addPayment(payment);
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

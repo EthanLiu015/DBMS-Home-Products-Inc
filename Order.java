@@ -77,7 +77,7 @@ public class Order {
     // Calculation methods remain the same
     public double calculateSubtotal() {
         return orderItems.stream()
-                .mapToDouble(item -> item.getQuotedPrice() * item.getQuantityOrdered())
+                .mapToDouble(item -> item.getQuotedPrice())
                 .sum();
     }
 

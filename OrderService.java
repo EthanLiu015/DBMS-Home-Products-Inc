@@ -32,7 +32,7 @@ public class OrderService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             ResultSet rs = stmt.executeQuery();
             int currentOrderId = -1;
             Order currentOrder = null;
@@ -80,7 +80,7 @@ public class OrderService {
                     currentOrder.addPayment(payment);
                 }
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -98,13 +98,13 @@ public class OrderService {
             "INSERT INTO tblOrder (CustomerID, OrderDate, ShippingDate, OrderStatus, " +
             "ShippingMethod, SalesTax) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
-                DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword())) {
-            
+            DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword())) {
+
             connection.setAutoCommit(false);
-            
+
             try (PreparedStatement orderStmt = connection.prepareStatement(orderQuery, 
-                    Statement.RETURN_GENERATED_KEYS)) {
-                
+                Statement.RETURN_GENERATED_KEYS)) {
+
                 orderStmt.setInt(1, order.getCustomerID());
                 orderStmt.setDate(2, order.getOrderDate());
                 orderStmt.setDate(3, order.getShippingDate());
@@ -113,15 +113,15 @@ public class OrderService {
                 orderStmt.setDouble(6, order.getSalesTax());
                 
                 orderStmt.executeUpdate();
-                
+
                 ResultSet generatedKeys = orderStmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     int orderId = generatedKeys.getInt(1);
-                    
+
                     String itemQuery = 
                         "INSERT INTO tblOrdersProducts (OrderID, ProductID, QuantityOrdered, " +
                         "QuotedPrice) VALUES (?, ?, ?, ?)";
-                    
+
                     try (PreparedStatement itemStmt = connection.prepareStatement(itemQuery)) {
                         for (Order.OrderItem item : order.getOrderItems()) {
                             itemStmt.setInt(1, orderId);
@@ -132,12 +132,12 @@ public class OrderService {
                         }
                         itemStmt.executeBatch();
                     }
-                    
+
                     String paymentQuery =
                         "INSERT INTO tblPayment (OrderID, PaymentDate, CardHolder, Amount, " +
                         "Method, CardNumber, ExpirationDate, BooleanCreditCard) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                    
+
                     try (PreparedStatement paymentStmt = connection.prepareStatement(paymentQuery)) {
                         for (Order.Payment payment : order.getPayments()) {
                             paymentStmt.setInt(1, orderId);
@@ -152,14 +152,14 @@ public class OrderService {
                         }
                         paymentStmt.executeBatch();
                     }
-                    
+
                     connection.commit();
                     return true;
                 }
             }
             connection.rollback();
             return false;
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -177,11 +177,11 @@ public class OrderService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             stmt.setInt(1, customerID);
             ResultSet rs = stmt.executeQuery();
             return rs.next() && rs.getInt(1) > 0;
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -200,7 +200,7 @@ public class OrderService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             for (Order.OrderItem item : order.getOrderItems()) {
                 stmt.setString(1, item.getProductID());
                 ResultSet rs = stmt.executeQuery();
@@ -209,9 +209,9 @@ public class OrderService {
                     regularTotal += unitPrice * item.getQuantityOrdered();
                 }
             }
-            
+
             return regularTotal - order.calculateSubtotal();
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return 0.0;

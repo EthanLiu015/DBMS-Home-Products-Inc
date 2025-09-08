@@ -36,119 +36,8 @@ public class MainMenu {
     }
 
 private JLayeredPane createTitlePanel() {
-    JLayeredPane titlePanel = new JLayeredPane();
-    titlePanel.setBackground(new Color(245, 222, 179));
-    titlePanel.setOpaque(true);
-
-    JLabel titleLabel = new JLabel("Home Products Inc.", JLabel.CENTER);
-    titleLabel.setFont(new Font("Futura", Font.BOLD, 36));
-    titleLabel.setForeground(new Color(139, 69, 19));
-    titleLabel.setBounds(100, 20, 600, 50);
-
-    JTextArea descriptionLabel = new JTextArea("Welcome to the Main Menu. Please use this page to navigate through the database.");
-    descriptionLabel.setFont(new Font("Roboto", Font.PLAIN, 20));
-    descriptionLabel.setForeground(new Color(139, 69, 19));
-    descriptionLabel.setWrapStyleWord(false);
-    descriptionLabel.setLineWrap(false);
-    descriptionLabel.setEditable(false);
-    descriptionLabel.setBackground(titlePanel.getBackground());
-
-    JPanel exitButtonPanel = createExitButton();
-    exitButtonPanel.setBounds(10, 10, 40, 40);
-
-    JLabel logoLabel = new JLabel();
-    logoLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-    logoLabel.setBounds(700, 10, 120, 90);
-
-    titlePanel.add(exitButtonPanel, JLayeredPane.DEFAULT_LAYER);
-    titlePanel.add(titleLabel, JLayeredPane.DEFAULT_LAYER);
-    titlePanel.add(descriptionLabel, JLayeredPane.DEFAULT_LAYER);
-    titlePanel.add(logoLabel, JLayeredPane.PALETTE_LAYER);
-
-    mainPanel.addComponentListener(new ComponentAdapter() {
-        @Override
-        public void componentResized(ComponentEvent e) {
-            Dimension panelSize = mainPanel.getSize();
-            int titleHeight = Math.max(panelSize.height / 8, 150);
-            titlePanel.setPreferredSize(new Dimension(panelSize.width, titleHeight));
-
-            int logoHeight = titleHeight * 3 / 4;
-            int logoWidth = logoHeight * 4 / 3;
-            ImageIcon logoIcon = new ImageIcon("Logo.jpg");
-            Image scaledLogo = logoIcon.getImage().getScaledInstance(logoWidth, logoHeight, Image.SCALE_SMOOTH);
-            logoLabel.setIcon(new ImageIcon(scaledLogo));
-            logoLabel.setBounds(panelSize.width - logoWidth - 20, (titleHeight - logoHeight) / 2, logoWidth, logoHeight);
-
-            int titleLabelWidth = panelSize.width - logoWidth - 100;
-            int newFontSize = Math.max(36, panelSize.width / 30);
-            titleLabel.setFont(new Font("Futura", Font.BOLD, newFontSize));
-            titleLabel.setBounds((panelSize.width - titleLabelWidth) / 2, 20, titleLabelWidth, 50);
-
-            int descriptionFontSize = Math.max(20, panelSize.width / 80);
-            descriptionLabel.setFont(new Font("Roboto", Font.PLAIN, descriptionFontSize));
-            descriptionLabel.setBounds(
-                (panelSize.width - 800) / 2,
-                titleLabel.getY() + titleLabel.getHeight() + 25,
-                800,
-                40
-            );
-
-            titlePanel.revalidate();
-            titlePanel.repaint();
-        }
-    });
-
-    titlePanel.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, new Color(200, 150, 120)));
-    return titlePanel;
-}
-
-private JPanel createExitButton() {
-    JPanel exitButtonPanel = new JPanel() {
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            
-            int diameter = Math.min(getWidth(), getHeight()) - 10;
-            int x = (getWidth() - diameter) / 2;
-            int y = (getHeight() - diameter) / 2;
-            
-            g2.setColor(getBackground());
-            g2.fillOval(x, y, diameter, diameter);
-            
-            g2.setColor(Color.WHITE);
-            g2.setStroke(new BasicStroke(2));
-            int padding = diameter / 4;
-            g2.drawLine(x + padding, y + padding, x + diameter - padding, y + diameter - padding);
-            g2.drawLine(x + diameter - padding, y + padding, x + padding, y + diameter - padding);
-        }
-    };
-    
-    exitButtonPanel.setPreferredSize(new Dimension(40, 40));
-    exitButtonPanel.setOpaque(false);
-    exitButtonPanel.setBackground(new Color(139, 0, 0));
-    
-    exitButtonPanel.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            System.exit(0);
-        }
-        
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            exitButtonPanel.setBackground(new Color(100, 0, 0));
-            exitButtonPanel.repaint();
-        }
-        
-        @Override
-        public void mouseExited(MouseEvent e) {
-            exitButtonPanel.setBackground(new Color(139, 0, 0));
-            exitButtonPanel.repaint();
-        }
-    });
-    
-    return exitButtonPanel;
+    return UIFactory.createTitlePanel(mainApp, mainPanel, "Home Products Inc.", 
+        "Welcome to the Main Menu. Please use this page to navigate through the database.", null);
 }
 
     private JLabel createBackgroundLabel() {
@@ -179,7 +68,7 @@ private JPanel createExitButton() {
     createHelpPopup();
     
     // Help button (bottom left)
-    JButton helpButton = createButton("Help");
+    JButton helpButton = UIFactory.createMainMenuButton("Help");
     helpButton.setPreferredSize(new Dimension(150, 50));
     helpButton.setFont(new Font("Roboto", Font.PLAIN, 24));
     
@@ -291,7 +180,7 @@ private JPanel createExitButton() {
     int fontSize = Math.max(32, screenSize.height / 30);  // Dynamic font size
 
     for (String label : buttonLabels) {
-        JButton button = createButton(label);
+        JButton button = UIFactory.createMainMenuButton(label);
         button.setFont(new Font("Roboto", Font.PLAIN, fontSize));
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setPreferredSize(new Dimension(buttonWidth, buttonHeight));
@@ -324,110 +213,4 @@ private JPanel createExitButton() {
     return centeringPanel;
 }
 
-    private JButton createButton(String label) {
-    JButton button = new JButton() {
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
-            // Button background
-            if (getModel().isPressed()) {
-                g2.setColor(new Color(170, 120, 60)); // Darker when pressed
-            } else if (getModel().isRollover()) {
-                g2.setColor(new Color(190, 140, 80)); // Dark on hover
-            } else {
-                g2.setColor(new Color(222, 174, 111)); // Normal color
-            }
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-
-            // Text rendering with larger font size
-            g2.setColor(Color.WHITE);
-            FontMetrics fm = g2.getFontMetrics();
-            int textWidth = fm.stringWidth(label);
-            int textHeight = fm.getHeight();
-            int x = (getWidth() - textWidth) / 2;
-            int y = ((getHeight() - textHeight) / 2) + fm.getAscent();
-            g2.drawString(label, x, y);
-        }
-
-        @Override
-        protected void paintBorder(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g;
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(new Color(139, 69, 19));
-            g2.setStroke(new BasicStroke(2));
-            g2.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, 20, 20);
-        }
-    };
-
-    button.setFont(new Font("Roboto", Font.PLAIN, 32));
-    button.setForeground(Color.WHITE);
-    button.setContentAreaFilled(false);
-    button.setFocusPainted(false);
-    button.setOpaque(true);
-    button.setRolloverEnabled(true);
-
-    button.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            button.setBackground(button.getBackground().darker());
-            button.repaint();
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            button.setBackground(new Color(222, 174, 111));
-            button.repaint();
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            button.setBackground(button.getBackground().darker());
-            button.repaint();
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-            button.setBackground(new Color(222, 174, 111));
-            button.repaint();
-        }
-    });
-
-    return button;
-}
-
-
-    private JButton createHelpButton() {
-    JButton helpButton = createButton("Help");
-    
-    // Set dimensions based on screen size
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    int helpButtonWidth = screenSize.width / 32;  // Dynamic width
-    int helpButtonHeight = screenSize.height / 64;  // Dynamic height
-    helpButton.setPreferredSize(new Dimension(helpButtonWidth, helpButtonHeight));
-    
-    // Style the help button
-    helpButton.setFont(new Font("Roboto", Font.PLAIN, 16));
-    helpButton.setBackground(new Color(222, 174, 111));
-    helpButton.setForeground(Color.WHITE);
-    
-    // Add hover effects
-    helpButton.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseEntered(MouseEvent e) {
-            helpButton.setBackground(new Color(190, 140, 80));
-            helpButton.repaint();
-        }
-        
-        @Override
-        public void mouseExited(MouseEvent e) {
-            helpButton.setBackground(new Color(222, 174, 111));
-            helpButton.repaint();
-        }
-    });
-    
-    return helpButton;
-}
 }

@@ -20,7 +20,7 @@ public class SalesRepService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-
+            
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 SalesRep rep = new SalesRep();
@@ -60,7 +60,7 @@ public class SalesRepService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-
+            
             stmt.setString(1, rep.getLastName());
             stmt.setString(2, rep.getFirstName());
             stmt.setString(3, rep.getBusinessPhone());
@@ -96,7 +96,7 @@ public class SalesRepService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-
+            
             stmt.setString(1, rep.getLastName());
             stmt.setString(2, rep.getFirstName());
             stmt.setString(3, rep.getBusinessPhone());
@@ -130,10 +130,10 @@ public class SalesRepService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             stmt.setInt(1, managerId);
             ResultSet rs = stmt.executeQuery();
-            
+
             if (rs.next()) {
                 return rs.getInt(1) > 0;
             }

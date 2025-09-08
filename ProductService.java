@@ -21,7 +21,7 @@ public class ProductService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Product product = new Product();
@@ -33,7 +33,7 @@ public class ProductService {
                 product.setWarehouse(rs.getInt("WarehouseID"));
                 products.add(product);
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -54,16 +54,16 @@ public class ProductService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             stmt.setString(1, product.getProductID());
             stmt.setString(2, product.getProductDescription());
             stmt.setDouble(3, product.getUnitPrice());
             stmt.setShort(4, product.getUnitsonHand());
             stmt.setString(5, product.getProductClass());
             stmt.setInt(6, product.getWarehouse());
-            
+
             return stmt.executeUpdate() > 0;
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -83,16 +83,16 @@ public class ProductService {
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement stmt = connection.prepareStatement(query)) {
-            
+
             stmt.setString(1, product.getProductDescription());
             stmt.setDouble(2, product.getUnitPrice());
             stmt.setShort(3, product.getUnitsonHand());
             stmt.setString(4, product.getProductClass());
             stmt.setInt(5, product.getWarehouse());
             stmt.setString(6, product.getProductID());
-            
+
             return stmt.executeUpdate() > 0;
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -130,15 +130,15 @@ public class ProductService {
         try (Connection conn = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
             PreparedStatement stmt = conn.prepareStatement(query)) {
-            ResultSet rs = stmt.executeQuery(query);
-            
+            ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 warehouseIDs.add(rs.getInt("WarehouseID"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return warehouseIDs;
     }
 
@@ -173,7 +173,7 @@ public class ProductService {
         try (Connection conn = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
                 DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
             PreparedStatement stmt = conn.prepareStatement(query)) {
-
+            
             stmt.setString(1, productId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
