@@ -15,7 +15,7 @@ A full-stack desktop business management application built from the ground up in
 
 ### 1. Database Setup
 1.  Create a new database in MySQL.
-2.  Run the provided SQL schema script to create the necessary tables and seed initial data.
+2.  Run the provided SQL schema (`schema.sql`) script to create the necessary tables and seed initial data.
 3.  Update the `DatabaseConfig.java` file with your local MySQL database name and port, username, and password:
     ```java
     // in DatabaseConfig.java
