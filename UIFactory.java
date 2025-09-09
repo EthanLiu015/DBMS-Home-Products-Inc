@@ -161,11 +161,15 @@ public final class UIFactory {
                 int titleLabelWidth = panelSize.width - logoWidth - 100;
                 int newFontSize = Math.max(36, panelSize.width / 30);
                 titleLabel.setFont(new Font("Futura", Font.BOLD, newFontSize));
-                titleLabel.setBounds(0, 20, panelSize.width, 50);
+                FontMetrics titleMetrics = titleLabel.getFontMetrics(titleLabel.getFont());
+                int titleHeightCalculated = titleMetrics.getHeight();
+                titleLabel.setBounds(0, 20, panelSize.width, titleHeightCalculated);
 
                 int descriptionFontSize = Math.max(20, panelSize.width / 80);
                 descriptionLabel.setFont(new Font("Roboto", Font.PLAIN, descriptionFontSize));
-                descriptionLabel.setBounds(0, titleLabel.getY() + titleLabel.getHeight() + 10, panelSize.width, 40);
+                FontMetrics descMetrics = descriptionLabel.getFontMetrics(descriptionLabel.getFont());
+                int descHeightCalculated = descMetrics.getHeight();
+                descriptionLabel.setBounds(0, titleLabel.getY() + titleLabel.getHeight() + 10, panelSize.width, descHeightCalculated);
 
                 titlePanel.revalidate();
                 titlePanel.repaint();
@@ -559,6 +563,11 @@ public final class UIFactory {
                 int x = (getWidth() - textWidth) / 2;
                 int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
                 g2.drawString(getText(), x, y);
+
+                // Draw the border
+                g2.setColor(PRIMARY_FOREGROUND);
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(1, 1, getWidth() - 2, getHeight() - 2, 20, 20);
             }
         };
 
@@ -566,6 +575,7 @@ public final class UIFactory {
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setOpaque(false);
+        button.setRolloverEnabled(true);
         return button;
     }
 }
