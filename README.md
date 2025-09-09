@@ -14,14 +14,13 @@ A full-stack desktop business management application built from the ground up in
 *   The MySQL Connector/J JAR file (e.g., `mysql-connector-j-9.1.0.jar`) placed in the root directory of the project.
 
 ### 1. Database Setup
-1.  Create a new database in MySQL.
-2.  Run the provided SQL schema (`schema.sql`) script to create the necessary tables and seed initial data.
-3.  Update the `DatabaseConfig.java` file with your local MySQL database name and port, username, and password:
+1.  Ensure your MySQL server is running.
+2.  Run the provided SQL schema script (`schema.sql`). This will create the `HomeProductsIncSmall` database, create all necessary tables, and seed them with initial data.
+3.  Update the `DatabaseConfig.java` file with your local MySQL username and password if they are different from the defaults:
     ```java
     // in DatabaseConfig.java
-    private static final String DB_URL = "jdbc:mysql:/local_host/db_name";
-    private static final String DB_USERNAME = "your_mysql_username";
-    private static final String DB_PASSWORD = "your_mysql_password";
+    private static final String DB_USERNAME = "root";  // Update if needed
+    private static final String DB_PASSWORD = ""; // Update with your password
     ```
 
 ### 2. Compilation
