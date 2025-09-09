@@ -65,57 +65,74 @@ public class NewEditOrder {
         gbc.insets = new Insets(10, 10, 10, 10);
         
         // Add sections to the form panel
-        addCustomerSection(formPanel, gbc);
-        addOrderDetailsSection(formPanel, gbc);
-        addProductSection(formPanel, gbc);
+        UIFactory.addSectionHeader(formPanel, "Customer Information", gbc);
+        addCustomerSectionFields(formPanel, gbc);
+
+        UIFactory.addSectionHeader(formPanel, "Order Details", gbc);
+        addOrderDetailsSectionFields(formPanel, gbc);
+
+        UIFactory.addSectionHeader(formPanel, "Products", gbc);
+        JPanel productPanel = createProductSectionPanel();
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(productPanel, gbc);
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
         
         // Center the form panel
         JPanel centeringPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centeringPanel.setBackground(new Color(245, 222, 179));
         centeringPanel.add(formPanel);
-        
         // Create scroll pane using the factory
         JScrollPane scrollPane = UIFactory.createThemedScrollPane(centeringPanel);
-        
         // Add components to main panel
         mainPanel.add(createTitlePanel(), BorderLayout.NORTH);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(UIFactory.createSaveCancelButtonPanel(this::handleSaveButton, () -> mainApp.showScreen("OrderPresentation")), BorderLayout.SOUTH);
     }
-    private void addCustomerSection(JPanel panel, GridBagConstraints gbc) {
-        UIFactory.addSectionHeader(panel, "Customer Information", gbc);
-        customerID = UIFactory.createNumericTextField(300);
+    private void addCustomerSectionFields(JPanel panel, GridBagConstraints gbc) {
+        customerID = UIFactory.createNumericTextField(100);
         UIFactory.addFormField(panel, "Customer ID:", customerID, gbc);
     }
 
-    private void addProductSection(JPanel panel, GridBagConstraints gbc) {
-        UIFactory.addSectionHeader(panel, "Products", gbc);
+    private JPanel createProductSectionPanel() {
         JPanel productPanel = new JPanel(new BorderLayout(10, 10));
         productPanel.setBackground(new Color(245, 222, 179));
-        productPanel.setPreferredSize(new Dimension(700, 300));
         
         // Product selection panel
-        JPanel selectionPanel = new JPanel();
-        selectionPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 15));
+        JPanel selectionPanel = new JPanel(new GridBagLayout());
         selectionPanel.setBackground(new Color(245, 222, 179));
+        GridBagConstraints selGbc = new GridBagConstraints();
+        selGbc.insets = new Insets(5, 5, 5, 5);
+        selGbc.anchor = GridBagConstraints.WEST;
         
         JComboBox<String> productComboBox = new JComboBox<>(getProductList());
         productComboBox.setPreferredSize(new Dimension(300, 25));
         JTextField quantityField = UIFactory.createNumericOnlyTextField(80);
         
-        JLabel productLabel = new JLabel("Product:", SwingConstants.RIGHT);
-        JLabel quantityLabel = new JLabel("Quantity:", SwingConstants.RIGHT);
-        productLabel.setPreferredSize(new Dimension(60, 25));
-        quantityLabel.setPreferredSize(new Dimension(60, 25));
-        
         JButton addButton = UIFactory.createStyledButton("Add");
         addButton.addActionListener(e -> addProductFromDropdown(productComboBox, quantityField));
         
-        selectionPanel.add(productLabel);
-        selectionPanel.add(productComboBox);
-        selectionPanel.add(quantityLabel);
-        selectionPanel.add(quantityField);
-        selectionPanel.add(addButton);
+        selGbc.gridx = 0;
+        selectionPanel.add(new JLabel("Product:"), selGbc);
+
+        selGbc.gridx = 1;
+        selectionPanel.add(productComboBox, selGbc);
+
+        selGbc.gridx = 2;
+        selectionPanel.add(new JLabel("Quantity:"), selGbc);
+
+        selGbc.gridx = 3;
+        selectionPanel.add(quantityField, selGbc);
+
+        selGbc.gridx = 4;
+        selectionPanel.add(addButton, selGbc);
+
+        selGbc.gridx = 5;
+        selGbc.weightx = 1.0;
+        selectionPanel.add(Box.createHorizontalGlue(), selGbc);
         
         // Product table
         productTableModel = new DefaultTableModel(
@@ -126,9 +143,12 @@ public class NewEditOrder {
         productTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         productTable.getColumnModel().getColumn(1).setPreferredWidth(300);
         productTable.getColumnModel().getColumn(2).setPreferredWidth(100);
-        
+
+        JScrollPane tableScrollPane = new JScrollPane(productTable);
+        tableScrollPane.setPreferredSize(new Dimension(650, 200));
+
         productPanel.add(selectionPanel, BorderLayout.NORTH);
-        productPanel.add(new JScrollPane(productTable), BorderLayout.CENTER);
+        productPanel.add(tableScrollPane, BorderLayout.CENTER);
         
         // Remove button
         JButton removeButton = UIFactory.createStyledButton("Remove Selected");
@@ -138,32 +158,28 @@ public class NewEditOrder {
         buttonPanel.add(removeButton);
         productPanel.add(buttonPanel, BorderLayout.SOUTH);
         
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        panel.add(productPanel, gbc);
-        gbc.gridy++;
+        return productPanel;
     }
 
-    private void addOrderDetailsSection(JPanel panel, GridBagConstraints gbc) {
-        UIFactory.addSectionHeader(panel, "Order Details", gbc);
-        
-        orderDateSpinner = UIFactory.createDatePicker("MM/dd/yyyy", 300);
+    private void addOrderDetailsSectionFields(JPanel panel, GridBagConstraints gbc) {
+        orderDateSpinner = UIFactory.createDatePicker("MM/dd/yyyy", 150);
         UIFactory.addFormField(panel, "Order Date:", orderDateSpinner, gbc);
         
-        shippingDateSpinner = UIFactory.createDatePicker("MM/dd/yyyy", 300);
+        shippingDateSpinner = UIFactory.createDatePicker("MM/dd/yyyy", 150);
         UIFactory.addFormField(panel, "Shipping Date:", shippingDateSpinner, gbc);
         
         // Status
         statusComboBox = new JComboBox<>(ORDER_STATUS);
+        statusComboBox.setPreferredSize(new Dimension(100, 25));
         UIFactory.addFormField(panel, "Status:", statusComboBox, gbc);
         
         // Shipping Method
         shippingMethodComboBox = new JComboBox<>(SHIPPING_METHODS);
+        shippingMethodComboBox.setPreferredSize(new Dimension(200, 25));
         UIFactory.addFormField(panel, "Shipping Method:", shippingMethodComboBox, gbc);
         
         // Sales Tax
-        salesTax = UIFactory.createNumericTextField(300);
+        salesTax = UIFactory.createNumericTextField(75);
         UIFactory.addFormField(panel, "Sales Tax:", salesTax, gbc);
     }
     private Optional<String> getValidationError() {
@@ -186,7 +202,7 @@ public class NewEditOrder {
         int customerIDValue;
         try {
             customerIDValue = Integer.parseInt(customerID.getText().trim());
-            if (!OrderService.isValidCustomer(customerIDValue)) {
+            if (!CustomerService.isValidCustomer(customerIDValue)) {
                 return Optional.of("Customer ID " + customerIDValue + " does not exist.");
             }
         } catch (NumberFormatException e) {
@@ -210,6 +226,28 @@ public class NewEditOrder {
         if (validationError.isPresent()) {
             JOptionPane.showMessageDialog(mainPanel, validationError.get(), "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        // Clear the existing list of items and rebuild it from the table model.
+        // This ensures the order object is in sync with what the user sees on the screen,
+        // preventing errors from stale data.
+        order.getOrderItems().clear();
+        for (int i = 0; i < productTableModel.getRowCount(); i++) {
+            Order.OrderItem item = new Order.OrderItem();
+            item.setProductID((String) productTableModel.getValueAt(i, 0));
+            item.setProductDescription((String) productTableModel.getValueAt(i, 1));
+            item.setQuantityOrdered((Integer) productTableModel.getValueAt(i, 2));
+            
+            // The quoted price is stored as a formatted string (e.g., "$123.45"), so we parse it.
+            String quotedPriceStr = (String) productTableModel.getValueAt(i, 4);
+            try {
+                double quotedPrice = Double.parseDouble(quotedPriceStr.replace("$", ""));
+                item.setQuotedPrice(quotedPrice);
+            } catch (NumberFormatException e) {
+                // This is a fallback in case the price format is invalid.
+                item.setQuotedPrice(0.0);
+            }
+            order.addOrderItem(item);
         }
 
         // Set basic order details
@@ -296,79 +334,85 @@ private String[] getProductList() {
 
 
 private void addProductFromDropdown(JComboBox<String> productComboBox, JTextField quantityField) {
-        String selected = (String) productComboBox.getSelectedItem();
-        String quantityText = quantityField.getText().trim();
-        
-        // Validate inputs
-        if (selected == null || selected.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(mainPanel, 
-                "Please select a product.", 
-                "Validation Error", 
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        if (quantityText.isEmpty()) {
-            JOptionPane.showMessageDialog(mainPanel, 
-                "Please enter a quantity.", 
-                "Validation Error", 
-                JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        try {
-            int quantity = Integer.parseInt(quantityText);
-            if (quantity <= 0) {
-                JOptionPane.showMessageDialog(mainPanel, 
-                    "Quantity must be greater than 0.", 
-                    "Validation Error", 
-                    JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            String productId = selected.split(" - ")[0];
-            String description = selected.split(" - ")[1];
-            
-            // Get the regular unit price from database
-            double unitPrice = ProductService.getProductPrice(productId);
-            
-            // Calculate quoted price based on quantity (implement any discount logic here)
-            double quotedPrice = unitPrice * quantity; // Quoted price should be unitPrice * quantity
-            
-            // Create and add OrderItem to the order
-            Order.OrderItem item = new Order.OrderItem();
-            item.setProductID(productId);
-            item.setProductDescription(description);
-            item.setQuantityOrdered(quantity);
-            item.setQuotedPrice(quotedPrice);
-            order.addOrderItem(item);
-            
-            // Add to table display
-            productTableModel.addRow(new Object[]{
-                productId,
-                description,
-                quantity,
-                String.format("$%.2f", unitPrice),
-                String.format("$%.2f", quotedPrice)
-            });
-            
-            quantityField.setText("");
-            
-            // Calculate totals after adding product
-            calculateTotals();
-            
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(mainPanel, 
-                "Please enter a valid number for quantity.", 
-                "Validation Error", 
-                JOptionPane.ERROR_MESSAGE);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            JOptionPane.showMessageDialog(mainPanel, 
-                "Invalid product format.", 
-                "Error", 
-                JOptionPane.ERROR_MESSAGE);
-        }
+    String selected = (String) productComboBox.getSelectedItem();
+    String quantityText = quantityField.getText().trim();
+
+    // Validate inputs
+    if (selected == null || selected.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(mainPanel, "Please select a product.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
     }
+
+    if (quantityText.isEmpty()) {
+        JOptionPane.showMessageDialog(mainPanel, "Please enter a quantity.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    try {
+        int quantityToAdd = Integer.parseInt(quantityText);
+        if (quantityToAdd <= 0) {
+            JOptionPane.showMessageDialog(mainPanel, "Quantity must be greater than 0.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String productId = selected.split(" - ")[0];
+        String description = selected.split(" - ")[1];
+
+        // Check if product already exists in the order
+        for (int i = 0; i < productTableModel.getRowCount(); i++) {
+            if (productId.equals(productTableModel.getValueAt(i, 0))) {
+                // Product exists, update quantity
+                int existingQuantity = (int) productTableModel.getValueAt(i, 2);
+                int newQuantity = existingQuantity + quantityToAdd;
+
+                double unitPrice = ProductService.getProductPrice(productId);
+                double newQuotedPrice = unitPrice * newQuantity;
+
+                // Update the OrderItem in the order object
+                Order.OrderItem itemToUpdate = order.getOrderItems().get(i);
+                itemToUpdate.setQuantityOrdered(newQuantity);
+                itemToUpdate.setQuotedPrice(newQuotedPrice);
+
+                // Update the table model
+                productTableModel.setValueAt(newQuantity, i, 2);
+                productTableModel.setValueAt(String.format("$%.2f", newQuotedPrice), i, 4);
+
+                quantityField.setText("");
+                calculateTotals();
+                return; // Exit the method
+            }
+        }
+
+        // If product is not in the order, add it as a new item
+        double unitPrice = ProductService.getProductPrice(productId);
+        double quotedPrice = unitPrice * quantityToAdd;
+
+        // Create and add OrderItem to the order
+        Order.OrderItem item = new Order.OrderItem();
+        item.setProductID(productId);
+        item.setProductDescription(description);
+        item.setQuantityOrdered(quantityToAdd);
+        item.setQuotedPrice(quotedPrice);
+        order.addOrderItem(item);
+
+        // Add to table display
+        productTableModel.addRow(new Object[]{
+            productId,
+            description,
+            quantityToAdd,
+            String.format("$%.2f", unitPrice),
+            String.format("$%.2f", quotedPrice)
+        });
+
+        quantityField.setText("");
+        calculateTotals();
+
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(mainPanel, "Please enter a valid number for quantity.", "Validation Error", JOptionPane.ERROR_MESSAGE);
+    } catch (ArrayIndexOutOfBoundsException e) {
+        JOptionPane.showMessageDialog(mainPanel, "Invalid product format.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
 
 
 }

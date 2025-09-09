@@ -69,26 +69,20 @@ public class NewEditProduct {
         UIFactory.addSectionHeader(panel, "Product Information", gbc);
 
         // ProductID field with mask formatter
-        if (!isEditMode) {
-            productIDField = new JTextField();
+        try {
+            MaskFormatter formatter = new MaskFormatter("UU##");
+            formatter.setPlaceholderCharacter('_');
+            productIDField = new JFormattedTextField(formatter);
             productIDField.setPreferredSize(new Dimension(300, 25));
-            // Add document filter to enforce the format
-            ((AbstractDocument) productIDField.getDocument()).setDocumentFilter(new ProductIDDocumentFilter());
-        } else {
-            // Keep the existing masked formatter for edit mode
-            try {
-                MaskFormatter formatter = new MaskFormatter("UU##");
-                formatter.setValidCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
-                productIDField = new JFormattedTextField(formatter);
-                productIDField.setPreferredSize(new Dimension(300, 25));
-            } catch (ParseException e) {
-                productIDField = new JTextField(); // Fallback
-            }
+        } catch (ParseException e) {
+            // This should not happen with a hardcoded mask, but as a fallback:
+            e.printStackTrace();
+            productIDField = new JTextField(); // Basic fallback
         }
         UIFactory.addFormField(panel, "Product ID:", productIDField, gbc);
 
         // Product Description
-        productDescriptionArea = UIFactory.createRestrictedTextArea(3, 20, 200);
+        productDescriptionArea = UIFactory.createRestrictedTextArea(3, 20, 100);
         JScrollPane descScrollPane = new JScrollPane(productDescriptionArea);
         descScrollPane.setPreferredSize(new Dimension(300, 75));
         UIFactory.addFormField(panel, "Description:", descScrollPane, gbc);
@@ -124,6 +118,12 @@ public class NewEditProduct {
 
 private void handleSaveButton() {
         // Validate required fields
+        String productId = productIDField.getText().trim();
+        if (!isEditMode && !productId.matches("[A-Z]{2}[0-9]{2}")) {
+            JOptionPane.showMessageDialog(mainPanel, "Product ID must be two uppercase letters followed by two numbers (e.g., AA12).", "Validation Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         if (productIDField.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(mainPanel, "Product ID is required.", "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -212,7 +212,7 @@ private void populateFields() {
         productIDField.setBackground(new Color(240, 240, 240));  // Visual feedback that it's disabled
         
         productDescriptionArea.setText(existingProduct.getProductDescription());
-        unitPriceField.setText(String.valueOf(existingProduct.getUnitPrice()));
+        unitPriceField.setText(String.format("%.2f", existingProduct.getUnitPrice()));
         unitsOnHandField.setText(String.valueOf(existingProduct.getUnitsonHand()));
         productClassComboBox.setSelectedItem(existingProduct.getProductClass());
         warehouseComboBox.setSelectedItem(existingProduct.getWarehouse());
@@ -220,78 +220,6 @@ private void populateFields() {
 
 public JPanel getMainPanel() {
     return mainPanel;
-}
-
-// Custom document filter for decimal validation
-class DecimalDocumentFilter extends DocumentFilter {
-    private final int maxIntegerDigits;
-    private final int maxFractionDigits;
-
-    public DecimalDocumentFilter(int maxIntegerDigits, int maxFractionDigits) {
-        this.maxIntegerDigits = maxIntegerDigits;
-        this.maxFractionDigits = maxFractionDigits;
-    }
-
-    @Override
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-        StringBuilder builder = new StringBuilder(fb.getDocument().getText(0, fb.getDocument().getLength()));
-        builder.insert(offset, string);
-        if (isValid(builder.toString())) {
-            super.insertString(fb, offset, string, attr);
-        }
-    }
-
-    @Override
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-        StringBuilder builder = new StringBuilder(fb.getDocument().getText(0, fb.getDocument().getLength()));
-        builder.replace(offset, offset + length, text);
-        if (isValid(builder.toString())) {
-            super.replace(fb, offset, length, text, attrs);
-        }
-    }
-
-    private boolean isValid(String text) {
-        if (text.isEmpty()) return true;
-        
-        String[] parts = text.split("\\.");
-        if (parts.length > 2) return false;
-        
-        // Check integer part
-        if (parts[0].length() > maxIntegerDigits) return false;
-        if (!parts[0].matches("\\d*")) return false;
-        
-        // Check decimal part if exists
-        if (parts.length == 2) {
-            if (parts[1].length() > maxFractionDigits) return false;
-            if (!parts[1].matches("\\d*")) return false;
-        }
-        
-        return true;
-    }
-}
-
-// Custom document filter for product ID validation
-class ProductIDDocumentFilter extends DocumentFilter {
-    @Override
-    public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-        if (isValid(fb.getDocument().getText(0, fb.getDocument().getLength()) + string)) {
-            super.insertString(fb, offset, string.toUpperCase(), attr);
-        }
-    }
-
-    @Override
-    public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-        String currentText = fb.getDocument().getText(0, fb.getDocument().getLength());
-        String newText = currentText.substring(0, offset) + text + currentText.substring(offset + length);
-        if (isValid(newText)) {
-            super.replace(fb, offset, length, text.toUpperCase(), attrs);
-        }
-    }
-
-    private boolean isValid(String text) {
-        if (text.length() > 4) return false;
-        return text.matches("[A-Za-z]{0,2}[0-9]{0,2}");
-    }
 }
 
 private boolean isValidWarehouse(int warehouseId) {

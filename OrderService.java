@@ -167,28 +167,6 @@ public class OrderService {
     }
 
     /**
-     * method to check if a customer is valid
-     * @param customerID customer to check
-     * @return a boolean if the customer is valid
-     */
-    public static boolean isValidCustomer(int customerID) {
-        String query = "SELECT COUNT(*) FROM tblCustomer WHERE CustomerID = ?";
-        
-        try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
-                DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-
-            stmt.setInt(1, customerID);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next() && rs.getInt(1) > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    /**
      * method to calculate how much of a discount the order was
      * @param Order order to check
      * @return double of how much of a discount it was

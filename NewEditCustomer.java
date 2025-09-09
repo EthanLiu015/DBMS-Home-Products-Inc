@@ -72,10 +72,10 @@ public class NewEditCustomer {
         // Personal Information Section
         UIFactory.addSectionHeader(panel, "Personal Information", gbc);
         
-        firstNameField = UIFactory.createRestrictedTextField(200, 50);
+        firstNameField = UIFactory.createRestrictedTextField(200, 30);
         UIFactory.addFormField(panel, "First Name:", firstNameField, gbc);
         
-        lastNameField = UIFactory.createRestrictedTextField(200, 50);
+        lastNameField = UIFactory.createRestrictedTextField(200, 30);
         UIFactory.addFormField(panel, "Last Name:", lastNameField, gbc);
         
         titleField = UIFactory.createRestrictedTextField(200, 50);
@@ -84,7 +84,7 @@ public class NewEditCustomer {
         // Contact Information Section
         UIFactory.addSectionHeader(panel, "Contact Information", gbc);
         
-        streetField = UIFactory.createRestrictedTextField(300, 100);
+        streetField = UIFactory.createRestrictedTextField(300, 50);
         UIFactory.addFormField(panel, "Street:", streetField, gbc);
         
         cityField = UIFactory.createRestrictedTextField(300, 50);
@@ -99,7 +99,7 @@ public class NewEditCustomer {
         stateComboBox.setPreferredSize(new Dimension(300, 25));
         UIFactory.addFormField(panel, "State:", stateComboBox, gbc);
         
-        zipCodeField = UIFactory.createNumericTextField(300);
+        zipCodeField = UIFactory.createNumericOnlyTextField(300, 5);
         UIFactory.addFormField(panel, "Zip Code:", zipCodeField, gbc);
         
         businessPhoneField = UIFactory.createPhoneField(300);
@@ -118,7 +118,7 @@ public class NewEditCustomer {
         companyField = UIFactory.createRestrictedTextField(300, 50);
         UIFactory.addFormField(panel, "Company:", companyField, gbc);
         
-        websiteField = UIFactory.createRestrictedTextField(300, 400);
+        websiteField = UIFactory.createRestrictedTextField(300, 200);
         UIFactory.addFormField(panel, "Website:", websiteField, gbc);
 
         repIDField = UIFactory.createNumericTextField(300);
@@ -211,21 +211,21 @@ public class NewEditCustomer {
         customer.setNotes(notesArea.getText().trim());
         
         // Save or update the customer
-        boolean success;
+        String errorMessage;
         if (isEditMode) {
-            success = CustomerService.updateCustomer(customer);
+            errorMessage = CustomerService.updateCustomer(customer);
         } else {
-            success = CustomerService.addCustomer(customer);
+            errorMessage = CustomerService.addCustomer(customer);
         }
         
-        if (success) {
+        if (errorMessage == null) {
             JOptionPane.showMessageDialog(mainPanel, 
                 isEditMode ? "Customer updated successfully!" : "Customer saved successfully!", 
                 "Success", JOptionPane.INFORMATION_MESSAGE);
             mainApp.showScreen("CustomerPresentation");
         } else {
             JOptionPane.showMessageDialog(mainPanel, 
-                "Unable to " + (isEditMode ? "update" : "save") + " customer. Please check your data and try again.", 
+                errorMessage, 
                 "Save Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -243,7 +243,7 @@ private void populateFields() {
         zipCodeField.setText(existingCustomer.getZipCode());
         companyField.setText(existingCustomer.getCompany());
         websiteField.setText(existingCustomer.getWebsite());
-        customerCreditField.setText(String.valueOf(existingCustomer.getCustomerCredit()));
+        customerCreditField.setText(String.format("%.2f", existingCustomer.getCustomerCredit()));
         repIDField.setText(String.valueOf(existingCustomer.getRepID()));
         statusComboBox.setSelectedItem(existingCustomer.getStatus());
         notesArea.setText(existingCustomer.getNotes());

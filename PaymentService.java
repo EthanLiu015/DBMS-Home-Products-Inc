@@ -86,6 +86,28 @@ public class PaymentService {
     }
 
     /**
+     * method to check if an order is valid
+     * @param orderID order to check
+     * @return a boolean if the order is valid
+     */
+    public static boolean isValidOrder(int orderID) {
+        String query = "SELECT COUNT(*) FROM tblOrder WHERE OrderID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
+                DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            stmt.setInt(1, orderID);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * helper method to load all the products in an order
      * @param order order to load products for
      */

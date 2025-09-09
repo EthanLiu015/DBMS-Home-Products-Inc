@@ -1,6 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Run application by compiling and then running:
+ * javac -cp .:mysql-connector-j-9.1.0.jar -d build/classes *.java
+ * java -cp build/classes:mysql-connector-j-9.1.0.jar MainApplication
+ */
 public class MainApplication {
     private JFrame mainFrame;
     private CardLayout cardLayout;

@@ -310,6 +310,28 @@ public final class UIFactory {
         return field;
     }
 
+    public static JTextField createNumericOnlyTextField(int width, int maxLength) {
+        JTextField field = new JTextField();
+        field.setPreferredSize(new Dimension(width, 25));
+
+        ((AbstractDocument) field.getDocument()).setDocumentFilter(new DocumentFilter() {
+            @Override
+            public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+                if (string.matches("[0-9]*") && (fb.getDocument().getLength() + string.length()) <= maxLength) {
+                    super.insertString(fb, offset, string, attr);
+                }
+            }
+
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                if (text.matches("[0-9]*") && (fb.getDocument().getLength() - length + text.length()) <= maxLength) {
+                    super.replace(fb, offset, length, text, attrs);
+                }
+            }
+        });
+        return field;
+    }
+
     public static JPanel createInfoField(String label, String value) {
         JPanel fieldPanel = new JPanel(new BorderLayout(10, 0));
         fieldPanel.setBackground(Color.WHITE);

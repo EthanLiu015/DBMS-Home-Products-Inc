@@ -68,11 +68,15 @@ public class CustomerService
      * @param customer is the customer to add
      * @return a boolean if the customer was successfully added
      */
-    public static boolean addCustomer(Customer customer)
+    public static String addCustomer(Customer customer)
     {
-        String query = "INSERT INTO tblCustomer (FirstName, LastName, Address1, City, State, ZipCode, Credit, SalesRepID, Company, Website, Email, BusinessNumber, CellNumber, Title, CustomerStatus, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        boolean success = false;
+        // As an example, let's say a new customer cannot have a credit limit over $20,000
+        if (customer.getCustomerCredit() > 20000.00) {
+            return "Credit limit cannot exceed $20,000.00.";
+        }
 
+        String query = "INSERT INTO tblCustomer (FirstName, LastName, Address1, City, State, ZipCode, Credit, SalesRepID, Company, Website, Email, BusinessNumber, CellNumber, Title, CustomerStatus, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
         try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
              PreparedStatement preparedStatement = connection.prepareStatement(query))
         {
@@ -96,16 +100,15 @@ public class CustomerService
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0)
             {
-                success = true;
-                //System.out.println("Customer added successfully.");
+                return null; // Success
             }
+            return "Unable to save customer. Please check your data and try again.";
         }
         catch (SQLException e)
         {
             e.printStackTrace();
+            return "An error occurred while saving the customer: " + e.getMessage();
         }
-
-        return success;
     }
 
     /**
@@ -137,14 +140,41 @@ public class CustomerService
         
         return false;
     }
+
+    /**
+     * method to check if a customer is valid
+     * @param customerID customer to check
+     * @return a boolean if the customer is valid
+     */
+    public static boolean isValidCustomer(int customerID) {
+        String query = "SELECT COUNT(*) FROM tblCustomer WHERE CustomerID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
+                DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            stmt.setInt(1, customerID);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     
     /**
      * update the parameters of the customer
      * @param customer to update
      * @return true/false if the update was successful
      */
-    public static boolean updateCustomer(Customer customer)
+    public static String updateCustomer(Customer customer)
     {
+        // As an example, let's say a customer cannot have a credit limit over $20,000
+        if (customer.getCustomerCredit() > 20000.00) {
+            return "Credit limit cannot exceed $20,000.00.";
+        }
+
         // query to run
         String query = "UPDATE tblCustomer SET " +
             "FirstName = ?, LastName = ?, Address1 = ?, City = ?, State = ?, ZipCode = ?, Credit = ?, " +
@@ -174,12 +204,15 @@ public class CustomerService
             stmt.setString(16, customer.getNotes());
             stmt.setInt(17, customer.getCustomerID());
             
-            return stmt.executeUpdate() > 0;
+            if (stmt.executeUpdate() > 0) {
+                return null; // Success
+            }
+            return "Unable to update customer. Customer not found or data is unchanged.";
         }
         catch (SQLException e)
         {
             e.printStackTrace();
-            return false;
+            return "An error occurred while updating the customer: " + e.getMessage();
         }
     }
 

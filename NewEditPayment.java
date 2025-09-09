@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.Calendar;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
 
@@ -18,7 +19,7 @@ public class NewEditPayment {
     
     // Payment Form Fields
     private JTextField customerIDField;
-    private JComboBox<String> orderComboBox;
+    private JTextField orderIDField;
     private JSpinner paymentDateSpinner;
     private JTextField amountField;
     private JComboBox<String> methodComboBox;
@@ -37,7 +38,6 @@ public class NewEditPayment {
         this.payment = new Payment();
         createAndShowGUI();
         customerIDField.setText("1"); // Set a default customer ID
-        updateOrderComboBox();
     }
     
     public JPanel getMainPanel() {
@@ -90,9 +90,8 @@ public class NewEditPayment {
         customerIDField = UIFactory.createNumericTextField(300);
         UIFactory.addFormField(panel, "Customer ID:", customerIDField, gbc);
         
-        orderComboBox = new JComboBox<>();
-        orderComboBox.setPreferredSize(new Dimension(300, 25));
-        UIFactory.addFormField(panel, "Order:", orderComboBox, gbc);
+        orderIDField = UIFactory.createNumericTextField(300);
+        UIFactory.addFormField(panel, "Order ID:", orderIDField, gbc);
     }
     
     private void addPaymentDetailsSection(JPanel panel, GridBagConstraints gbc) {
@@ -117,7 +116,7 @@ public class NewEditPayment {
         creditCardCheckBox = new JCheckBox("Pay by Credit Card");
         UIFactory.addFormField(panel, "", creditCardCheckBox, gbc);
         
-        cardHolderField = UIFactory.createRestrictedTextField(300, 100);
+        cardHolderField = UIFactory.createRestrictedTextField(300, 50);
         cardHolderField.setEnabled(false);
         UIFactory.addFormField(panel, "Card Holder:", cardHolderField, gbc);
         
@@ -135,13 +134,6 @@ public class NewEditPayment {
     }
     
     private void setupListeners() {
-        // Customer ID change listener
-        customerIDField.getDocument().addDocumentListener(new DocumentListener() {
-            public void changedUpdate(DocumentEvent e) { updateOrderComboBox(); }
-            public void removeUpdate(DocumentEvent e) { updateOrderComboBox(); }
-            public void insertUpdate(DocumentEvent e) { updateOrderComboBox(); }
-        });
-        
         // Credit Card checkbox listener
         creditCardCheckBox.addActionListener(e -> {
             boolean isSelected = creditCardCheckBox.isSelected();
@@ -162,18 +154,16 @@ public class NewEditPayment {
     }
 
     private void handleSaveButton() {
-        if (!validateForm()) {
-            JOptionPane.showMessageDialog(mainPanel, 
-                "Please fill in all required fields correctly.", 
-                "Validation Error", 
-                JOptionPane.ERROR_MESSAGE);
+        Optional<String> validationError = getValidationError();
+        if (validationError.isPresent()) {
+            JOptionPane.showMessageDialog(mainPanel, validationError.get(), "Validation Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         try {
             // Set payment details
             payment.setCustomerID(Integer.parseInt(customerIDField.getText()));
-            payment.setOrderID(getSelectedOrderID());
+            payment.setOrderID(Integer.parseInt(orderIDField.getText().trim()));
             payment.setPaymentDate(new java.sql.Date(((Date)paymentDateSpinner.getValue()).getTime()));
             payment.setAmount(Double.parseDouble(amountField.getText()));
             payment.setMethod((String)methodComboBox.getSelectedItem());
@@ -205,55 +195,66 @@ public class NewEditPayment {
         }
     }
 
-private boolean validateForm() {
-        if (customerIDField.getText().trim().isEmpty() ||
-            orderComboBox.getSelectedItem() == null ||
-            paymentDateSpinner.getValue() == null ||
-            amountField.getText().trim().isEmpty() ||
-            methodComboBox.getSelectedItem() == null) {
-            return false;
+    private Optional<String> getValidationError() {
+        if (customerIDField.getText().trim().isEmpty()) {
+            return Optional.of("Customer ID is required.");
         }
-
-        if (creditCardCheckBox.isSelected()) {
-            if (cardHolderField.getText().trim().isEmpty() ||
-                cardNumberField.getText().trim().isEmpty() ||
-                expirationDateSpinner.getValue() == null) {
-                return false;
-            }
-            // Validate card number format
-            if (!cardNumberField.getText().matches("\\d{16}")) {
-                return false;
-            }
-        }
-
-        try {
-            double amount = Double.parseDouble(amountField.getText());
-            return amount > 0;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-private void updateOrderComboBox() {
-        orderComboBox.removeAllItems();
         try {
             int customerId = Integer.parseInt(customerIDField.getText().trim());
-            List<Order> orders = PaymentService.getUnpaidOrders(customerId);
-            for (Order order : orders) {
-                String item = String.format("Order #%d - $%.2f", 
-                    order.getOrderID(), order.calculateTotal());
-                orderComboBox.addItem(item);
+            if (!CustomerService.isValidCustomer(customerId)) {
+                return Optional.of("Customer ID " + customerId + " does not exist.");
             }
-        } catch (NumberFormatException ignored) {
+        } catch (NumberFormatException e) {
+            return Optional.of("Customer ID must be a valid number.");
         }
-    }
 
-private int getSelectedOrderID() {
-        String selected = (String)orderComboBox.getSelectedItem();
-        if (selected != null) {
-            return Integer.parseInt(selected.split("#")[1].split(" ")[0]);
+        if (orderIDField.getText().trim().isEmpty()) {
+            return Optional.of("Order ID is required.");
         }
-        return -1;
+        try {
+            int orderId = Integer.parseInt(orderIDField.getText().trim());
+            if (!PaymentService.isValidOrder(orderId)) {
+                return Optional.of("Order ID " + orderId + " does not exist.");
+            }
+        } catch (NumberFormatException e) {
+            return Optional.of("Order ID must be a valid number.");
+        }
+
+        if (paymentDateSpinner.getValue() == null) {
+            return Optional.of("Payment Date is required.");
+        }
+        if (amountField.getText().trim().isEmpty()) {
+            return Optional.of("Amount is required.");
+        }
+        if (methodComboBox.getSelectedItem() == null) {
+            return Optional.of("Payment Method is required.");
+        }
+    
+        if (creditCardCheckBox.isSelected()) {
+            if (cardHolderField.getText().trim().isEmpty()) {
+                return Optional.of("Card Holder name is required for credit card payments.");
+            }
+            if (cardNumberField.getText().trim().isEmpty()) {
+                return Optional.of("Card Number is required for credit card payments.");
+            }
+            if (expirationDateSpinner.getValue() == null) {
+                return Optional.of("Expiration Date is required for credit card payments.");
+            }
+            if (!cardNumberField.getText().trim().matches("\\d{16}")) {
+                return Optional.of("Card Number must be 16 digits.");
+            }
+        }
+    
+        try {
+            double amount = Double.parseDouble(amountField.getText().trim());
+            if (amount <= 0) {
+                return Optional.of("Payment amount must be greater than zero.");
+            }
+        } catch (NumberFormatException e) {
+            return Optional.of("Please enter a valid number for the amount.");
+        }
+    
+        return Optional.empty(); // No errors
     }
 
 // Add the remaining helper methods from NewEditOrder:

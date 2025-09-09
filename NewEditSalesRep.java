@@ -132,11 +132,11 @@ public class NewEditSalesRep {
         UIFactory.addSectionHeader(panel, "Personal Information", gbc);
         
         // First Name
-        firstNameField = UIFactory.createRestrictedTextField(300, 50);
+        firstNameField = UIFactory.createRestrictedTextField(300, 30);
         UIFactory.addFormField(panel, "First Name:", firstNameField, gbc);
         
         // Last Name
-        lastNameField = UIFactory.createRestrictedTextField(300, 50);
+        lastNameField = UIFactory.createRestrictedTextField(300, 30);
         UIFactory.addFormField(panel, "Last Name:", lastNameField, gbc);
         
         // Title
@@ -166,7 +166,7 @@ public class NewEditSalesRep {
         UIFactory.addFormField(panel, "City:", cityField, gbc);
         
         // State dropdown
-        String[] states = {"AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
+        String[] states = {"", "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", 
                           "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", 
                           "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", 
                           "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", 
@@ -175,7 +175,7 @@ public class NewEditSalesRep {
         stateComboBox.setPreferredSize(new Dimension(300, 25));
         UIFactory.addFormField(panel, "State:", stateComboBox, gbc);
         
-        zipCodeField = UIFactory.createNumericOnlyTextField(300);
+        zipCodeField = UIFactory.createNumericOnlyTextField(300, 5);
         UIFactory.addFormField(panel, "Zip Code:", zipCodeField, gbc);
 
         // Business Information Section
