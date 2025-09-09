@@ -14,11 +14,12 @@ A full-stack desktop business management application built from the ground up in
 *   The MySQL Connector/J JAR file (e.g., `mysql-connector-j-9.1.0.jar`) placed in the root directory of the project.
 
 ### 1. Database Setup
-1.  Create a new database in MySQL named `HomeProductsIncSmall`.
+1.  Create a new database in MySQL.
 2.  Run the provided SQL schema script to create the necessary tables and seed initial data.
-3.  Update the `DatabaseConfig.java` file with your local MySQL username and password:
+3.  Update the `DatabaseConfig.java` file with your local MySQL database name and port, username, and password:
     ```java
     // in DatabaseConfig.java
+    private static final String DB_URL = "jdbc:mysql:/local_host/db_name";
     private static final String DB_USERNAME = "your_mysql_username";
     private static final String DB_PASSWORD = "your_mysql_password";
     ```
@@ -66,21 +67,10 @@ Throughout development, several key optimizations and refactoring steps were tak
 
 ## Lessons Learned:
 
-No matter what your experience level, being an engineer means continuously learning. Every time you build something you always have those *whoa this is awesome* or *wow I actually did it!* moments. This is where you should share those moments! Recruiters and interviewers love to see that you're self-aware and passionate about growing.
-
-Building this project from scratch was a fantastic learning experience that solidified core software engineering principles.
+This was my first time creating a full stack program.
 
 *   **The Power of a Service Layer:** The most significant lesson was the importance of separating business logic from the UI. Having a dedicated service layer made the code much cleaner, easier to debug, and more scalable. When a validation rule changed (like the customer credit limit), I only had to update it in one place (`CustomerService`) instead of hunting through UI code.
 
 *   **User-Centric Design:** Early versions of the UI had generic error messages and minor layout issues. Through iterative improvements, I learned how crucial specific feedback ("Credit limit cannot exceed $20,000" vs. "Save Error") and a polished, intuitive layout are for creating a usable application.
 
 *   **Defensive Database Programming:** I learned firsthand why database transactions are critical. Debugging a `Duplicate entry` error when saving an order taught me to synchronize the UI state with the data model just before saving, and to wrap the entire multi-table insert operation in a transaction to ensure data consistency. It highlighted that what the user sees must perfectly match what is sent to the database.
-
-## Examples:
-Take a look at these couple examples that I have in my own portfolio:
-
-**Palettable:** https://github.com/alecortega/palettable
-
-**Twitter Battle:** https://github.com/alecortega/twitter-battle
-
-**Patch Panel:** https://github.com/alecortega/patch-panel
