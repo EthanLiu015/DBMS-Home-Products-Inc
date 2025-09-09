@@ -97,7 +97,7 @@ private JLayeredPane createTitlePanel() {
     backgroundLabel.add(helpButton, helpGbc);
     
     // Version label (right side)
-    JLabel versionLabel = new JLabel("Version 1.0.0");
+    JLabel versionLabel = new JLabel("Version 1.0.1");
     versionLabel.setFont(new Font("Roboto", Font.PLAIN, 14));
     versionLabel.setForeground(new Color(139, 69, 19));
     
