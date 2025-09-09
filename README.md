@@ -4,7 +4,7 @@ A full-stack desktop business management application built from the ground up in
 
 **Link to project:** http://recruiters-love-seeing-live-demos.com/
 
-![A screenshot of the Home Products Inc. application main menu](http://placecorgi.com/1200/650)
+![A screenshot of the Home Products Inc. application main menu](main_menu_screenshot.png)
 
 ## How to Run
 
