@@ -98,7 +98,7 @@ CREATE TABLE `tblCustomer` (
   `CellNumber` varchar(15) DEFAULT NULL,
   `Title` varchar(50) DEFAULT NULL,
   `CustomerStatus` varchar(10) DEFAULT NULL,
-  `Notes` varchar(200) DEFAULT NULL,
+  `Notes` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`CustomerID`),
   KEY `SalesRepID` (`SalesRepID`),
   CONSTRAINT `tblcustomer_ibfk_1` FOREIGN KEY (`SalesRepID`) REFERENCES `tblSalesRep` (`SalesRepID`)
