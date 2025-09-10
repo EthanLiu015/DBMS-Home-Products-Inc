@@ -51,22 +51,22 @@ This application was built using a layered architecture to separate concerns and
 
 *   **Database (Model):** All data is stored in a **MySQL** database. The application uses **JDBC** for all database interactions, including complex transactional operations. For example, the order creation process is wrapped in a transaction to ensure that an order and all its line items are saved together, or the entire operation is rolled back on failure, guaranteeing data integrity.
 
-*   **Data Validation:** Robust, real-time validation is implemented on both the front-end (e.g., limiting input length, enforcing character formats with `DocumentFilter` and `MaskFormatter`) and the back-end (e.g., checking for the existence of a customer or product before saving).
+*   **Data Validation:** Validation is implemented on both the front-end (e.g., limiting input length, enforcing character formats with `DocumentFilter` and `MaskFormatter`) and the back-end (e.g., checking for the existence of a customer or product before saving).
 
 ## Optimizations
 *(optional)*
 
-Throughout development, several key optimizations and refactoring steps were taken to improve code quality and performance.
+Version 1.0.0 finished in January 2025; the latest September 2025 Version 1.0.1 fixed bugs regarding SQLException Errors and refactored the UI to reduce redundancies in the code.
 
-*   **Centralized Validation Logic:** Initially, some validation checks (like verifying a customer's existence) were duplicated across different service classes. This was refactored into a single, authoritative method within `CustomerService` and called from all necessary locations, adhering to the Don't Repeat Yourself (DRY) principle.
+*   **Centralized Validation Logic:** Initially, some validation checks (like verifying a customer's existence) were duplicated across different service classes. I refactored this into a single method within `CustomerService` and called from all necessary locations
 
-*   **Transactional Integrity:** The `OrderService.addOrder` method was built to be fully transactional. By disabling auto-commit, the application can execute multiple database inserts for the order header and its associated products as a single atomic unit. If any part fails, the entire transaction is rolled back, preventing partial or corrupt data from being saved to the database.
+*   **Transactional Integrity:** The `OrderService.addOrder` method was built to be fully transactional. By disabling auto-commit, the application can execute multiple database inserts for the order header and its associated products as a single atomic unit. If any part fails, the entire transaction is rolled back, preventing partial entries and corrupt data from being saved to the database.
 
 *   **Future Improvement - Connection Pooling:** Currently, the application opens a new database connection for each query. A major performance optimization would be to implement a JDBC connection pool (like HikariCP) to reuse existing connections, significantly reducing the overhead of database communication.
 
 ## Lessons Learned:
 
-This was my first time creating a full stack program.
+This was my first time creating a full stack program with a front-end, back-end, and API to connect between layers.
 
 *   **The Power of a Service Layer:** The most significant lesson was the importance of separating business logic from the UI. Having a dedicated service layer made the code much cleaner, easier to debug, and more scalable. When a validation rule changed (like the customer credit limit), I only had to update it in one place (`CustomerService`) instead of hunting through UI code.
 
