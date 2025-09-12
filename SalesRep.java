@@ -1,14 +1,14 @@
 public class SalesRep
 {
     private int RepID; // int
-    private String LastName; // varchar(50)
-    private String FirstName; // varchar(50)
+    private String LastName; // varchar(30)
+    private String FirstName; // varchar(30)
     private String BusinessPhone; // varchar(15)
     private String CellPhone; // varchar(15)
     private String HomePhone; // varchar(15)
     private String FaxNumber; // varchar(15)
     private String Title; // varchar(50)
-    private String Street; // varchar(100)
+    private String Street; // varchar(50)
     private String City; // varchar(50)
     private String State; // varchar(2)
     private String ZipCode; // varchar(10)

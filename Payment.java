@@ -4,14 +4,14 @@ public class Payment
 {
     private int PaymentID; // int
     private int CustomerID; // int
-    private int OrderID; // int
+    private int OrderID;
     private Date PaymentDate; // date
     private double Amount; // decimal(10,2)
     private String Method; // varchar(50)
     private String CardHolder; // varchar(100)
     private String CardNumber; // varchar(16)
     private Date ExpirationDate; // date
-    private boolean CreditCard; // boolean (was varchar in MySQL)
+    private boolean CreditCard; // boolean (was tinyint in mySQL)
 
     /**
      * Gets the unique identifier for the payment.

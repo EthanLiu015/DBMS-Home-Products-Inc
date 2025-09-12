@@ -196,11 +196,14 @@ public class NewEditPayment {
     }
 
     private Optional<String> getValidationError() {
+        int customerId;
+        int orderId;
+
         if (customerIDField.getText().trim().isEmpty()) {
             return Optional.of("Customer ID is required.");
         }
         try {
-            int customerId = Integer.parseInt(customerIDField.getText().trim());
+            customerId = Integer.parseInt(customerIDField.getText().trim());
             if (!CustomerService.isValidCustomer(customerId)) {
                 return Optional.of("Customer ID " + customerId + " does not exist.");
             }
@@ -212,12 +215,16 @@ public class NewEditPayment {
             return Optional.of("Order ID is required.");
         }
         try {
-            int orderId = Integer.parseInt(orderIDField.getText().trim());
+            orderId = Integer.parseInt(orderIDField.getText().trim());
             if (!PaymentService.isValidOrder(orderId)) {
                 return Optional.of("Order ID " + orderId + " does not exist.");
             }
         } catch (NumberFormatException e) {
             return Optional.of("Order ID must be a valid number.");
+        }
+
+        if (!PaymentService.isOrderOwnedByCustomer(orderId, customerId)) {
+            return Optional.of("Order " + orderId + " does not belong to Customer " + customerId + ".");
         }
 
         if (paymentDateSpinner.getValue() == null) {

@@ -109,10 +109,10 @@ private JPanel createPaymentInfoPanel() {
         panel.setBackground(Color.WHITE);
         
         // Get unique payments using a Set to track payment IDs
-        List<Order.Payment> payments = order.getPayments();
-        Map<Integer, Order.Payment> uniquePayments = new LinkedHashMap<>();
+        List<Payment> payments = order.getPayments();
+        Map<Integer, Payment> uniquePayments = new LinkedHashMap<>();
         
-        for (Order.Payment payment : payments) {
+        for (Payment payment : payments) {
             uniquePayments.putIfAbsent(payment.getPaymentID(), payment);
         }
         
@@ -124,7 +124,7 @@ private JPanel createPaymentInfoPanel() {
         double totalPaid = 0.0;
         int count = 1;
         
-        for (Order.Payment payment : uniquePayments.values()) {
+        for (Payment payment : uniquePayments.values()) {
             totalPaid += payment.getAmount();
             
             // Add separator between payments
@@ -139,9 +139,9 @@ private JPanel createPaymentInfoPanel() {
             panel.add(UIFactory.createInfoField("Payment ID: ", String.valueOf(payment.getPaymentID())));
             panel.add(UIFactory.createInfoField("Payment Date: ", String.valueOf(payment.getPaymentDate())));
             panel.add(UIFactory.createInfoField("Card Holder: ", payment.getCardHolder()));
-            panel.add(UIFactory.createInfoField("Payment Method: ", payment.getPaymentMethod()));
+            panel.add(UIFactory.createInfoField("Payment Method: ", payment.getMethod()));
             panel.add(UIFactory.createInfoField("Amount: ", String.format("$%.2f", payment.getAmount())));
-            panel.add(UIFactory.createInfoField("Credit Card: ", payment.getIsCreditCard() ? "Yes" : "No"));
+            panel.add(UIFactory.createInfoField("Credit Card: ", payment.isCreditCard() ? "Yes" : "No"));
             
             count++;
         }

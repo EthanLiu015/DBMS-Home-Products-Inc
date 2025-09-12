@@ -159,7 +159,7 @@ public class NewEditSalesRep {
         UIFactory.addFormField(panel, "Fax Number:", faxNumberField, gbc);
         
         // Address fields
-        streetField = UIFactory.createRestrictedTextField(300, 100);
+        streetField = UIFactory.createRestrictedTextField(300, 50);
         UIFactory.addFormField(panel, "Street:", streetField, gbc);
         
         cityField = UIFactory.createRestrictedTextField(300, 50);

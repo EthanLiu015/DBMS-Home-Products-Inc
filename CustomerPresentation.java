@@ -9,6 +9,8 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
  * Represents the presentation screen for displaying a list of customers.
  * This class is responsible for creating the UI to show all customers in a table,
  * providing actions like creating a new customer, and navigating to view customer details.
+ * @author Ethan Liu
+ * @version 1.0.1
  */
 public class CustomerPresentation {
     private MainApplication mainApp;

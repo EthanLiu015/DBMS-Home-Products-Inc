@@ -108,6 +108,30 @@ public class PaymentService {
     }
 
     /**
+     * Checks if a given order belongs to a specific customer.
+     * @param orderId The ID of the order to check.
+     * @param customerId The ID of the customer to check against.
+     * @return true if the order belongs to the customer, false otherwise.
+     */
+    public static boolean isOrderOwnedByCustomer(int orderId, int customerId) {
+        String query = "SELECT COUNT(*) FROM tblOrder WHERE OrderID = ? AND CustomerID = ?";
+        
+        try (Connection connection = DriverManager.getConnection(DatabaseConfig.getDbUrl(), 
+                DatabaseConfig.getDbUsername(), DatabaseConfig.getDbPassword());
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+
+            stmt.setInt(1, orderId);
+            stmt.setInt(2, customerId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
      * helper method to load all the products in an order
      * @param order order to load products for
      */
@@ -152,15 +176,16 @@ public class PaymentService {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Order.Payment payment = new Order.Payment();
+                Payment payment = new Payment();
                 payment.setPaymentID(rs.getInt("PaymentID"));
+                payment.setOrderID(rs.getInt("OrderID"));
                 payment.setPaymentDate(rs.getDate("PaymentDate"));
                 payment.setAmount(rs.getDouble("Amount"));
-                payment.setPaymentMethod(rs.getString("Method"));
+                payment.setMethod(rs.getString("Method"));
                 payment.setCardHolder(rs.getString("CardHolder"));
                 payment.setCardNumber(rs.getString("CardNumber"));
                 payment.setExpirationDate(rs.getDate("ExpirationDate"));
-                payment.setIsCreditCard(rs.getBoolean("BooleanCreditCard"));
+                payment.setCreditCard(rs.getBoolean("BooleanCreditCard"));
 
                 order.addPayment(payment);
             }

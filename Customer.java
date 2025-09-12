@@ -1,22 +1,22 @@
 public class Customer
 {
     private int CustomerID; // int
-    private String FirstName; // varchar(50)
-    private String LastName; // varchar(50)
-    private String Street; // varchar(100)
+    private String FirstName; // varchar(30)
+    private String LastName; // varchar(30)
+    private String Street; // varchar(50)
     private String City; // varchar(50)
     private String State; // varchar(2)
-    private String ZipCode; // varchar(10)
+    private String ZipCode; // varchar(5)
     private double CustomerCredit; // decimal(10,2)
     private int RepID; // int
-    private String Company; // varchar(50)
-    private String Website; //  varchar(400)
+    private String Company; // varchar(100)
+    private String Website; //  varchar(200)
     private String CustomerEmail; // varchar(100)
     private String CustomerBusinessPhone; // varchar(15)
     private String CustomerCellPhone; // varchar(15)
     private String Title; // varchar(50)
     private String Status; // varchar(10)
-    private String Notes; // varchar(200)
+    private String Notes; // varchar(1000)
 
     /**
      * Gets the unique identifier for the customer.

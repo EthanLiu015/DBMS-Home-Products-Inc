@@ -68,15 +68,15 @@ public class OrderService {
                 // order payment within payment class
                 int paymentId = rs.getInt("PaymentID");
                 if (!rs.wasNull()) {
-                    Order.Payment payment = new Order.Payment();
+                    Payment payment = new Payment();
                     payment.setPaymentID(paymentId);
                     payment.setPaymentDate(rs.getDate("PaymentDate"));
                     payment.setCardHolder(rs.getString("CardHolder"));
                     payment.setAmount(rs.getDouble("Amount"));
-                    payment.setPaymentMethod(rs.getString("Method"));
+                    payment.setMethod(rs.getString("Method"));
                     payment.setCardNumber(rs.getString("CardNumber"));
                     payment.setExpirationDate(rs.getDate("ExpirationDate"));
-                    payment.setIsCreditCard(rs.getBoolean("BooleanCreditCard"));
+                    payment.setCreditCard(rs.getBoolean("BooleanCreditCard"));
                     currentOrder.addPayment(payment);
                 }
             }
@@ -131,26 +131,6 @@ public class OrderService {
                             itemStmt.addBatch();
                         }
                         itemStmt.executeBatch();
-                    }
-
-                    String paymentQuery =
-                        "INSERT INTO tblPayment (OrderID, PaymentDate, CardHolder, Amount, " +
-                        "Method, CardNumber, ExpirationDate, BooleanCreditCard) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-
-                    try (PreparedStatement paymentStmt = connection.prepareStatement(paymentQuery)) {
-                        for (Order.Payment payment : order.getPayments()) {
-                            paymentStmt.setInt(1, orderId);
-                            paymentStmt.setDate(2, payment.getPaymentDate());
-                            paymentStmt.setString(3, payment.getCardHolder());
-                            paymentStmt.setDouble(4, payment.getAmount());
-                            paymentStmt.setString(5, payment.getPaymentMethod());
-                            paymentStmt.setString(6, payment.getCardNumber());
-                            paymentStmt.setDate(7, payment.getExpirationDate());
-                            paymentStmt.setBoolean(8, payment.getIsCreditCard());
-                            paymentStmt.addBatch();
-                        }
-                        paymentStmt.executeBatch();
                     }
 
                     connection.commit();
