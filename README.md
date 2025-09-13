@@ -2,7 +2,7 @@
 
 A full-stack desktop business management application built from the ground up in Java. This system provides a robust, multi-screen GUI to perform full CRUD operations on customers, orders, products, and more, all powered by a MySQL database.
 
-**Link to project:** http://recruiters-love-seeing-live-demos.com/
+**Link to project:** Will have demo video link once my computer gets fixed
 
 ![A screenshot of the Home Products Inc. application main menu](main_menu_screenshot.png)
 
@@ -54,22 +54,17 @@ This application was built using a layered architecture to separate concerns and
 *   **Data Validation:** Validation is implemented on both the front-end (e.g., limiting input length, enforcing character formats with `DocumentFilter` and `MaskFormatter`) and the back-end (e.g., checking for the existence of a customer or product before saving).
 
 ## Optimizations
-*(optional)*
 
 Version 1.0.0 finished in January 2025; the latest September 2025 Version 1.0.1 fixed bugs regarding SQLException Errors and refactored the UI to reduce redundancies in the code.
 
-*   **Centralized Validation Logic:** Initially, some validation checks (like verifying a customer's existence) were duplicated across different service classes. I refactored this into a single method within `CustomerService` and called from all necessary locations
+*   **Centralized Validation :** Initially, some validation checks were duplicated across different service classes. I refactored this into a single method
 
-*   **Transactional Integrity:** The `OrderService.addOrder` method was built to be fully transactional. By disabling auto-commit, the application can execute multiple database inserts for the order header and its associated products as a single atomic unit. If any part fails, the entire transaction is rolled back, preventing partial entries and corrupt data from being saved to the database.
+*   **Transactional Integrity:** Some methods were built to be fully transactional. By disabling auto-commit, the application can execute multiple database inserts and its associated products as a single atomic unit. If any part fails, the entire transaction is rolled back, which preserves data integrity.
 
-*   **Future Improvement - Connection Pooling:** Currently, the application opens a new database connection for each query. A major performance optimization would be to implement a JDBC connection pool (like HikariCP) to reuse existing connections, significantly reducing the overhead of database communication.
+*   **Future Improvement - Connection Pooling:** Currently, the application opens a new database connection for each query. The next step for me would be to implement a JDBC connection pool (like HikariCP) to reuse existing connections.
 
 ## Lessons Learned:
 
-This was my first time creating a full stack program with a front-end, back-end, and API to connect between layers.
+This was my first time creating a full stack program with a front-end, back-end, and API to connect between layers. In the original code, I had over 9.9k lines, and lots of redundancies in the presentation later. I refactored all of this into a UIFactory class with static methods, reducing the amount of code by 4k lines. This was also my first time using an API, which I had trouble connecting at first, but got it down eventually.
 
-*   **The Power of a Service Layer:** The most significant lesson was the importance of separating business logic from the UI. Having a dedicated service layer made the code much cleaner, easier to debug, and more scalable. When a validation rule changed (like the customer credit limit), I only had to update it in one place (`CustomerService`) instead of hunting through UI code.
-
-*   **User-Centric Design:** Early versions of the UI had generic error messages and minor layout issues. Through iterative improvements, I learned how crucial specific feedback ("Credit limit cannot exceed $20,000" vs. "Save Error") and a polished, intuitive layout are for creating a usable application.
-
-*   **Defensive Database Programming:** I learned firsthand why database transactions are critical. Debugging a `Duplicate entry` error when saving an order taught me to synchronize the UI state with the data model just before saving, and to wrap the entire multi-table insert operation in a transaction to ensure data consistency. It highlighted that what the user sees must perfectly match what is sent to the database.
+Debugging a Duplicate entry error when saving an order taught me to synchronize the UI with the data model just before saving, and to wrap the entire multi-table insert operation in a transaction. It highlighted everything that goes on behind the back of an application.
